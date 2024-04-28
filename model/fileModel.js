@@ -10,6 +10,12 @@ const fileSchema = new mongoose.Schema({
         type: Number,
         required: true
     },
+    mimetype: {
+        type: String
+    },
+    path: {
+        type: String
+    },
     owner: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
