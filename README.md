@@ -25,9 +25,9 @@ npm install
 
 4. Create a `.env` file in the root directory and add the necessary environment variables:
 
-PORT = 5000
-MONGO_DB_URL = Your MongoDB URI
-JWT_SECRET_KEY = SecretKey
+- PORT = 5000
+- MONGO_DB_URL = Your MongoDB URI
+- JWT_SECRET_KEY = SecretKey
 
 
 5. Start the server:
@@ -53,7 +53,7 @@ npm start
     "confirmPassword": "Example@123"
 }
 
-Response: Upon successful registration, user details will display and JSON Web Token (JWT) will set in cookies.
+- Response: Upon successful registration, user details will display and JSON Web Token (JWT) will set in cookies.
 
 
 ### User Login
@@ -66,7 +66,7 @@ Response: Upon successful registration, user details will display and JSON Web T
     "password" : "Example@123"
 }
 
-Response: Upon successful login, user details will display and JSON Web Token (JWT) will set in cookies.
+- Response: Upon successful login, user details will display and JSON Web Token (JWT) will set in cookies.
 
 ## User Logout
 
