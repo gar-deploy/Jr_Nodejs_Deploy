@@ -2,7 +2,7 @@
 import express from "express";
 import env from "dotenv"
 import dbConnection from "./db/dbConnection.js";
-import router from "./router/userRoute.js";
+import router from "./router/route.js";
 import cookieParser from "cookie-parser";
 
 const app = express()
@@ -12,13 +12,13 @@ app.use(cookieParser());
 
 env.config()
 
-const port = process.env.PORT || 5000
+const port = process.env.PORT || 5000  // Getting data from .env File
 
 
 app.use("/", router)
 
 app.use("/*", (req, res) => {
-    res.send("Please check the url!!!")
+    res.send("Oops....! Please check the url again!!!")
 })
 
 

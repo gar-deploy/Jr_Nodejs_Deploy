@@ -1,53 +1,70 @@
 
-import mongoose from "mongoose";
 import fs from "fs"
 import fileModel from '../model/fileModel.js';
 
-// Set up Multer storage
+//************************************ UPLOAD FILE ********************************** */
 
 export const uploadFile = async (req, res) => {
 
-
-  if (!req.file) {
-    return res.status(400).json({ message: 'No file uploaded' });
-  }
-
-  const { filename, mimetype, size } = req.file;
-  const path = req.file.path;
-  const owner = req.user._id
-
   try {
-    const fileMetadata = new fileModel({
-      filename,
-      mimetype,
-      size,
-      path,
-      owner
-    });
-    await fileMetadata.save();
+    // Validation
+    if (!req.files || req.files.length === 0) {
+      return res.status(400).json({ status: false, error: 'No file uploaded' });
+    }
 
-    res.status(200).json({ message: 'File uploaded successfully', filename: req.file.filename });
+    const owner = req.user._id  // User's ObjectId
+
+    const uploadedFiles = req.files.map(file => ({
+      filename: file.filename,
+      mimetype: file.mimetype,
+      size: file.size,
+      path: file.path,
+      owner: owner
+    }));
+
+    const uploadingFiles = await fileModel.create(uploadedFiles);
+
+    const files = uploadingFiles.map(file => ({
+      filename: file.filename,
+      size: file.size,
+      path: file.path,
+      mimetype: file.mimetype
+    }));
+
+    res.status(200).json({ status: true, message: 'File uploaded successfully', data: files });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: 'Internal Server Error' });
+    res.status(500).json({ status: false, error: 'Internal Server Error' });
   }
 
 }
 
+
+//******************************************** GET FILES ************************************ */
 
 export const getFiles = async (req, res) => {
   try {
 
     const authUser = req.user._id
 
-    const files = await fileModel.find({ owner: authUser, isDeleted: false });
-    if (!files.length) {
-      return res.send({ message: "No file found" })
+    const gettingFiles = await fileModel.find({ owner: authUser, isDeleted: false });
+    if (!gettingFiles.length) {
+      return res.status(400).json({ status: false, error: "No files found" });
     }
-    res.status(200).json({ files });
+
+    const files = gettingFiles.map(file => ({
+      filename: file.filename,
+      size: file.size,
+      path: file.path,
+      mimetype: file.mimetype
+    }));
+
+
+
+    res.status(200).json({ status: true, message: 'Success', data: files });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: 'Internal Server Error' });
+    res.status(500).json({ status: false, error: 'Internal Server Error' });
   }
 };
 
@@ -55,27 +72,23 @@ export const getFiles = async (req, res) => {
 
 export const deleteFile = async (req, res) => {
   try {
-    const deletingFileId = req.params.id
+    const deletingFileName = req.params.nameOfFile
     const authUser = req.user._id;
 
 
-    const isValidObjectId = mongoose.Types.ObjectId.isValid(deletingFileId);
-    console.log(isValidObjectId);
-
-    if (!isValidObjectId) {
-      res.send({ message: `${deletingFileId} is not a valid Object ID` })
-    }
-    const file = await fileModel.findOneAndUpdate({ owner: authUser, _id: deletingFileId, isDeleted: false }, { isDeleted: true }, { new: true });
+    const file = await fileModel.findOneAndUpdate({ owner: authUser, filename: deletingFileName, isDeleted: false }, { isDeleted: true }, { new: true });
 
     if (!file) {
-      return res.status(404).json({ message: 'File not found' });
+      res.status(400).json({ status: false, error: `File with name ${deletingFileName} is not present` })
+    } else {
+
+      fs.unlinkSync(`uploads/${file.filename}`);
+      res.status(200).json({ status: true, message: `File ${file.filename} is deleted successfully` });
     }
 
-    fs.unlinkSync(`uploads/${file.filename}`);
-    res.status(200).json({ message: 'File deleted successfully' });
   } catch (error) {
 
     console.error(error);
-    res.status(500).json({ message: 'Internal Server Error' });
+    res.status(500).json({ status: false, error: 'Internal Server Error' });
   }
 };
