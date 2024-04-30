@@ -4,6 +4,11 @@
 
 This application provides functionalities for user authentication and file upload/storage. It allows users to register, login securely, upload files, and manage their uploaded files.
 
+Note: You can use Postman or similar tools to send requests.
+
+- Postman - `https://www.postman.com/downloads/`
+- Thunder Client - `https://www.thunderclient.com/`
+
 ## Getting Started
 
 To use this application locally, follow these steps:
@@ -52,7 +57,7 @@ npm start
     "password": "Example@123",
     "confirmPassword": "Example@123"
 }
-
+```
 - Response: Upon successful registration, user details will display and JSON Web Token (JWT) will set in cookies.
 
 
@@ -65,7 +70,7 @@ npm start
     "username" : "abhi",
     "password" : "Example@123"
 }
-
+```
 - Response: Upon successful login, user details will display and JSON Web Token (JWT) will set in cookies.
 
 ## User Logout
@@ -93,6 +98,7 @@ npm start
 - **Endpoint**: `DELETE /deletefiles/:nameOfFile`
 - **Description**: Allows authenticated users to delete a specific uploaded file.
 - **Response**: Upon successful deletion, a success message is returned.
+
 
 ## Error Handling
 
